@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 100 Equipos y Jugadores del Mundo 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .team-card:hover, .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .logo-placeholder {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 0.8rem;
+        }
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-content {
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <i class="fas fa-trophy text-3xl mr-3"></i>
+                    <h1 class="text-3xl font-bold">Top 100 Mundial 2025</h1>
+                </div>
+                <div class="flex space-x-1 bg-blue-700 rounded-lg p-1">
+                    <button id="teams-tab" class="tab-button px-4 py-2 rounded-md tab-active">Equipos</button>
+                    <button id="players-tab" class="tab-button px-4 py-2 rounded-md">Jugadores</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Search and Filter Section -->
+        <div class="mb-8 bg-white rounded-xl shadow-md p-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" id="search-input" placeholder="Buscar equipos o jugadores..." 
+                           class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div>
+                        <label for="league-filter" class="block text-sm font-medium text-gray-700 mb-1">Liga</label>
+                        <select id="league-filter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">Todas las ligas</option>
+                            <option value="Premier League">Premier League</option>
+                            <option value="La Liga">La Liga</option>
+                            <option value="Bundesliga">Bundesliga</option>
+                            <option value="Serie A">Serie A</option>
+                            <option value="Ligue 1">Ligue 1</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="country-filter" class="block text-sm font-medium text-gray-700 mb-1">País</label>
+                        <select id="country-filter" class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all">Todos los países</option>
+                            <option value="Inglaterra">Inglaterra</option>
+                            <option value="España">España</option>
+                            <option value="Alemania">Alemania</option>
+                            <option value="Italia">Italia</option>
+                            <option value="Francia">Francia</option>
+                            <option value="Brasil">Brasil</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Section -->
+        <section id="teams-section" class="fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Top 100 Equipos del Mundo 2025</h2>
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-600 mr-2">Ordenar por:</span>
+                    <select id="team-sort" class="border border-gray-300 rounded-lg px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="rank">Ranking</option>
+                        <option value="name">Nombre</option>
+                        <option value="league">Liga</option>
+                        <option value="country">País</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="teams-container">
+                <!-- Teams will be loaded here -->
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="pagination-button px-4 py-2 border rounded-lg bg-blue-600 text-white" data-page="1">1</button>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="2">2</button>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="3">3</button>
+                    <span class="px-2">...</span>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="10">10</button>
+                </nav>
+            </div>
+        </section>
+
+        <!-- Players Section -->
+        <section id="players-section" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Top 100 Jugadores del Mundo 2025</h2>
+                <div class="flex items-center">
+                    <span class="text-sm text-gray-600 mr-2">Ordenar por:</span>
+                    <select id="player-sort" class="border border-gray-300 rounded-lg px-3 py-1 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="rank">Ranking</option>
+                        <option value="name">Nombre</option>
+                        <option value="position">Posición</option>
+                        <option value="team">Equipo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto bg-white rounded-xl shadow">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jugador</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posición</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equipo</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nacionalidad</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valoración</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="players-container">
+                        <!-- Players will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="pagination-button px-4 py-2 border rounded-lg bg-blue-600 text-white" data-page="1">1</button>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="2">2</button>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="3">3</button>
+                    <span class="px-2">...</span>
+                    <button class="pagination-button px-4 py-2 border rounded-lg hover:bg-gray-100" data-page="10">10</button>
+                </nav>
+            </div>
+        </section>
+    </main>
+
+    <!-- Team Modal -->
+    <div id="team-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="relative">
+                <button id="close-team-modal" class="absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/3 flex flex-col items-center">
+                            <img id="team-modal-logo" src="" alt="" class="w-48 h-48 object-contain mb-4">
+                            <h2 id="team-modal-name" class="text-2xl font-bold text-center mb-2"></h2>
+                            <div class="flex items-center text-gray-600 mb-1">
+                                <i class="fas fa-trophy mr-2"></i>
+                                <span id="team-modal-league"></span>
+                            </div>
+                            <div class="flex items-center text-gray-600 mb-4">
+                                <i class="fas fa-flag mr-2"></i>
+                                <span id="team-modal-country"></span>
+                            </div>
+                            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mb-4">
+                                <span class="font-bold">Ranking:</span> <span id="team-modal-rank"></span>
+                            </div>
+                            <div class="w-full bg-gray-100 p-4 rounded-lg">
+                                <h3 class="font-bold mb-2">Información del Club</h3>
+                                <p><span class="font-semibold">Fundado:</span> <span id="team-modal-founded"></span></p>
+                                <p><span class="font-semibold">Estadio:</span> <span id="team-modal-stadium"></span></p>
+                                <p><span class="font-semibold">Capacidad:</span> <span id="team-modal-capacity"></span></p>
+                                <p><span class="font-semibold">Entrenador:</span> <span id="team-modal-coach"></span></p>
+                            </div>
+                        </div>
+                        <div class="md:w-2/3">
+                            <h3 class="text-xl font-bold mb-4">Títulos Principales</h3>
+                            <div class="mb-6">
+                                <div class="flex items-center bg-gray-100 px-4 py-2 rounded-t-lg">
+                                    <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                                    <h4 class="font-bold">Liga Nacional</h4>
+                                </div>
+                                <div id="team-modal-league-titles" class="border border-gray-200 rounded-b-lg p-4"></div>
+                            </div>
+                            <div class="mb-6">
+                                <div class="flex items-center bg-gray-100 px-4 py-2 rounded-t-lg">
+                                    <i class="fas fa-trophy text-blue-500 mr-2"></i>
+                                    <h4 class="font-bold">Copas Nacionales</h4>
+                                </div>
+                                <div id="team-modal-cup-titles" class="border border-gray-200 rounded-b-lg p-4"></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center bg-gray-100 px-4 py-2 rounded-t-lg">
+                                    <i class="fas fa-globe text-green-500 mr-2"></i>
+                                    <h4 class="font-bold">Títulos Internacionales</h4>
+                                </div>
+                                <div id="team-modal-international-titles" class="border border-gray-200 rounded-b-lg p-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-bold mb-4">Jugadores Destacados</h3>
+                        <div id="team-modal-players" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div id="player-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 opacity-0 invisible">
+        <div class="modal-content bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="relative">
+                <button id="close-player-modal" class="absolute top-4 right-4 bg-gray-200 rounded-full p-2 hover:bg-gray-300 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="p-8">
+                    <div class="flex flex-col md:flex-row gap-8">
+                        <div class="md:w-1/3 flex flex-col items-center">
+                            <img id="player-modal-photo" src="" alt="" class="w-48 h-48 rounded-full object-cover mb-4 border-4 border-blue-100">
+                            <h2 id="player-modal-name" class="text-2xl font-bold text-center mb-2"></h2>
+                            <div class="flex items-center text-gray-600 mb-1">
+                                <i class="fas fa-tshirt mr-2"></i>
+                                <span id="player-modal-position"></span>
+                            </div>
+                            <div class="flex items-center text-gray-600 mb-4">
+                                <i class="fas fa-flag mr-2"></i>
+                                <span id="player-modal-nationality"></span>
+                            </div>
+                            <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg mb-4">
+                                <span class="font-bold">Ranking:</span> <span id="player-modal-rank"></span>
+                            </div>
+                            <div class="w-full bg-gray-100 p-4 rounded-lg">
+                                <h3 class="font-bold mb-2">Información Personal</h3>
+                                <p><span class="font-semibold">Edad:</span> <span id="player-modal-age"></span></p>
+                                <p><span class="font-semibold">Altura:</span> <span id="player-modal-height"></span></p>
+                                <p><span class="font-semibold">Peso:</span> <span id="player-modal-weight"></span></p>
+                                <p><span class="font-semibold">Pie:</span> <span id="player-modal-foot"></span></p>
+                            </div>
+                        </div>
+                        <div class="md:w-2/3">
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-bold">Estadísticas 2024/25</h3>
+                                    <div class="flex items-center">
+                                        <img id="player-modal-team-logo" src="" alt="" class="w-8 h-8 mr-2">
+                                        <span id="player-modal-team" class="font-medium"></span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div class="bg-gray-100 p-3 rounded-lg">
+                                        <p class="text-sm text-gray-600">Partidos jugados</p>
+                                        <p class="text-xl font-bold" id="player-modal-games"></p>
+                                    </div>
+                                    <div class="bg-gray-100 p-3 rounded-lg">
+                                        <p class="text-sm text-gray-600">Goles</p>
+                                        <p class="text-xl font-bold" id="player-modal-goals"></p>
+                                    </div>
+                                    <div class="bg-gray-100 p-3 rounded-lg">
+                                        <p class="text-sm text-gray-600">Asistencias</p>
+                                        <p class="text-xl font-bold" id="player-modal-assists"></p>
+                                    </div>
+                                    <div class="bg-gray-100 p-3 rounded-lg">
+                                        <p class="text-sm text-gray-600">Valor de mercado</p>
+                                        <p class="text-xl font-bold" id="player-modal-value"></p>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-semibold">Valoración:</span>
+                                        <span id="player-modal-rating" class="font-bold text-lg"></span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div id="player-modal-rating-bar" class="bg-blue-600 h-2.5 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-6">
+                                <h4 class="font-bold mb-2">Trayectoria</h4>
+                                <div id="player-modal-career" class="space-y-3"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold mb-2">Palmarés</h4>
+                                <div id="player-modal-titles" class="space-y-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold mb-2">Top 100 Mundial 2025</h3>
+                    <p class="text-gray-400">Los mejores equipos y jugadores de fútbol del mundo</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-youtube text-xl"></i></a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+                <p>© 2025 Top 100 Mundial. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data for top 100 teams (updated for 2025)
+        const topTeams = [
+            { 
+                rank: 1, 
+                name: "Manchester City", 
+                league: "Premier League", 
+                country: "Inglaterra", 
+                logo: "https://logo.clearbit.com/mancity.com",
+                founded: "1880",
+                stadium: "Etihad Stadium",
+                capacity: "53,400",
+                coach: "Pep Guardiola",
+                leagueTitles: ["2021", "2022", "2023", "2024", "2025"],
+                cupTitles: ["FA Cup: 2023", "Carabao Cup: 2024"],
+                internationalTitles: ["Champions League: 2023", "UEFA Super Cup: 2023"]
+            },
+            { 
+                rank: 2, 
+                name: "Real Madrid", 
+                league: "La Liga", 
+                country: "España", 
+                logo: "https://logo.clearbit.com/realmadrid.com",
+                founded: "1902",
+                stadium: "Santiago Bernabéu",
+                capacity: "81,044",
+                coach: "Carlo Ancelotti",
+                leagueTitles: ["2022", "2025"],
+                cupTitles: ["Copa del Rey: 2023"],
+                internationalTitles: ["Champions League: 2022, 2024", "Club World Cup: 2022, 2024"]
+            },
+            { 
+                rank: 3, 
+                name: "Bayern Munich", 
+                league: "Bundesliga", 
+                country: "Alemania", 
+                logo: "https://logo.clearbit.com/fcbayern.com",
+                founded: "1900",
+                stadium: "Allianz Arena",
+                capacity: "75,024",
+                coach: "Julian Nagelsmann",
+                leagueTitles: ["2021", "2022", "2023", "2024", "2025"],
+                cupTitles: ["DFB-Pokal: 2023, 2025"],
+                internationalTitles: ["Champions League: 2020"]
+            },
+            { 
+                rank: 4, 
+                name: "Arsenal", 
+                league: "Premier League", 
+                country: "Inglaterra", 
+                logo: "https://logo.clearbit.com/arsenal.com",
+                founded: "1886",
+                stadium: "Emirates Stadium",
+                capacity: "60,260",
+                coach: "Mikel Arteta",
+                leagueTitles: ["2024"],
+                cupTitles: ["FA Cup: 2025", "Community Shield: 2024"],
+                internationalTitles: ["Europa League: 2025"]
+            },
+            { 
+                rank: 5, 
+                name: "Paris Saint-Germain", 
+                league: "Ligue 1", 
+                country: "Francia", 
+                logo: "https://logo.clearbit.com/psg.fr",
+                founded: "1970",
+                stadium: "Parc des Princes",
+                capacity: "47,929",
+                coach: "Luis Enrique",
+                leagueTitles: ["2022", "2023", "2024", "2025"],
+                cupTitles: ["Coupe de France: 2023, 2025"],
+                internationalTitles: []
+            },
+            { 
+                rank: 6, 
+                name: "Barcelona", 
+                league: "La Liga", 
+                country: "España", 
+                logo: "https://logo.clearbit.com/fcbarcelona.com",
+                founded: "1899",
+                stadium: "Spotify Camp Nou",
+                capacity: "99,354",
+                coach: "Xavi Hernández",
+                leagueTitles: ["2023"],
+                cupTitles: ["Copa del Rey: 2024"],
+                internationalTitles: []
+            },
+            { 
+                rank: 7, 
+                name: "Liverpool", 
+                league: "Premier League", 
+                country: "Inglaterra", 
+                logo: "https://logo.clearbit.com/liverpoolfc.com",
+                founded: "1892",
+                stadium: "Anfield",
+                capacity: "53,394",
+                coach: "Jürgen Klopp",
+                leagueTitles: ["2020"],
+                cupTitles: ["FA Cup: 2022", "Carabao Cup: 2024"],
+                internationalTitles: ["Champions League: 2019", "Club World Cup: 2019"]
+            },
+            { 
+                rank: 8, 
+                name: "Inter Milan", 
+                league: "Serie A", 
+                country: "Italia", 
+                logo: "https://logo.clearbit.com/inter.it",
+                founded: "1908",
+                stadium: "San Siro",
+                capacity: "75,923",
+                coach: "Simone Inzaghi",
+                leagueTitles: ["2021", "2025"],
+                cupTitles: ["Coppa Italia: 2023"],
+                internationalTitles: []
+            },
+            { 
+                rank: 9, 
+                name: "AC Milan", 
+                league: "Serie A", 
+                country: "Italia", 
+                logo: "https://logo.clearbit.com/acmilan.com",
+                founded: "1899",
+                stadium: "San Siro",
+                capacity: "75,923",
+                coach: "Stefano Pioli",
+                leagueTitles: ["2022"],
+                cupTitles: [],
+                internationalTitles: []
+            },
+            { 
+                rank: 10, 
+                name: "Atlético Madrid", 
+                league: "La Liga", 
+                country: "España", 
+                logo: "https://logo.clearbit.com/atleticodemadrid.com",
+                founded: "1903",
+                stadium: "Cívitas Metropolitano",
+                capacity: "68,456",
+                coach: "Diego Simeone",
+                leagueTitles: ["2021"],
+                cupTitles: [],
+                internationalTitles: ["Europa League: 2018"]
+            },
+            // Add more teams up to 100...
+        ];
+
+        // Sample data for top 100 players (updated for 2025)
+        const topPlayers = [
+            { 
+                rank: 1, 
+                name: "Erling Haaland", 
+                position: "Delantero", 
+                team: "Manchester City", 
+                nationality: "Noruega", 
+                rating: 95, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/418560-1671435885.jpg",
+                age: "24 años",
+                height: "1.94 m",
+                weight: "88 kg",
+                foot: "Izquierdo",
+                games: 48,
+                goals: 52,
+                assists: 12,
+                value: "€180M",
+                career: [
+                    { team: "Manchester City", period: "2022-Presente", logo: "https://logo.clearbit.com/mancity.com" },
+                    { team: "Borussia Dortmund", period: "2020-2022", logo: "https://logo.clearbit.com/bvb.de" },
+                    { team: "RB Salzburg", period: "2019-2020", logo: "https://logo.clearbit.com/redbullsalzburg.at" }
+                ],
+                titles: [
+                    "Premier League: 2023, 2024, 2025",
+                    "Champions League: 2023",
+                    "FA Cup: 2023",
+                    "Bundesliga: 2021",
+                    "DFB-Pokal: 2021"
+                ]
+            },
+            { 
+                rank: 2, 
+                name: "Kylian Mbappé", 
+                position: "Delantero", 
+                team: "Real Madrid", 
+                nationality: "Francia", 
+                rating: 94, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/342229-1671435885.jpg",
+                age: "26 años",
+                height: "1.78 m",
+                weight: "73 kg",
+                foot: "Derecho",
+                games: 45,
+                goals: 48,
+                assists: 15,
+                value: "€170M",
+                career: [
+                    { team: "Real Madrid", period: "2024-Presente", logo: "https://logo.clearbit.com/realmadrid.com" },
+                    { team: "Paris Saint-Germain", period: "2017-2024", logo: "https://logo.clearbit.com/psg.fr" },
+                    { team: "AS Monaco", period: "2015-2017", logo: "https://logo.clearbit.com/asmonaco.com" }
+                ],
+                titles: [
+                    "Ligue 1: 2018, 2019, 2020, 2022, 2023",
+                    "World Cup: 2018",
+                    "Coupe de France: 2018, 2020, 2021",
+                    "UEFA Nations League: 2021"
+                ]
+            },
+            { 
+                rank: 3, 
+                name: "Jude Bellingham", 
+                position: "Centrocampista", 
+                team: "Real Madrid", 
+                nationality: "Inglaterra", 
+                rating: 93, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/581989-1671435885.jpg",
+                age: "21 años",
+                height: "1.86 m",
+                weight: "75 kg",
+                foot: "Derecho",
+                games: 50,
+                goals: 22,
+                assists: 18,
+                value: "€160M",
+                career: [
+                    { team: "Real Madrid", period: "2023-Presente", logo: "https://logo.clearbit.com/realmadrid.com" },
+                    { team: "Borussia Dortmund", period: "2020-2023", logo: "https://logo.clearbit.com/bvb.de" },
+                    { team: "Birmingham City", period: "2019-2020", logo: "https://logo.clearbit.com/bcfc.com" }
+                ],
+                titles: [
+                    "La Liga: 2025",
+                    "DFB-Pokal: 2021",
+                    "Golden Boy: 2023"
+                ]
+            },
+            { 
+                rank: 4, 
+                name: "Vinicius Junior", 
+                position: "Delantero", 
+                team: "Real Madrid", 
+                nationality: "Brasil", 
+                rating: 92, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/371998-1671435885.jpg",
+                age: "24 años",
+                height: "1.76 m",
+                weight: "73 kg",
+                foot: "Derecho",
+                games: 42,
+                goals: 28,
+                assists: 20,
+                value: "€150M",
+                career: [
+                    { team: "Real Madrid", period: "2018-Presente", logo: "https://logo.clearbit.com/realmadrid.com" },
+                    { team: "Fluminense", period: "2017-2018", logo: "https://logo.clearbit.com/fluminense.com.br" }
+                ],
+                titles: [
+                    "Champions League: 2022, 2024",
+                    "La Liga: 2022, 2025",
+                    "Copa del Rey: 2023",
+                    "Club World Cup: 2022, 2024"
+                ]
+            },
+            { 
+                rank: 5, 
+                name: "Phil Foden", 
+                position: "Centrocampista", 
+                team: "Manchester City", 
+                nationality: "Inglaterra", 
+                rating: 91, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/406635-1671435885.jpg",
+                age: "25 años",
+                height: "1.71 m",
+                weight: "70 kg",
+                foot: "Izquierdo",
+                games: 46,
+                goals: 25,
+                assists: 22,
+                value: "€140M",
+                career: [
+                    { team: "Manchester City", period: "2017-Presente", logo: "https://logo.clearbit.com/mancity.com" }
+                ],
+                titles: [
+                    "Premier League: 2018, 2019, 2021, 2022, 2023, 2024, 2025",
+                    "Champions League: 2023",
+                    "FA Cup: 2023",
+                    "Carabao Cup: 2018, 2019, 2020, 2021, 2024"
+                ]
+            },
+            { 
+                rank: 6, 
+                name: "Bukayo Saka", 
+                position: "Delantero", 
+                team: "Arsenal", 
+                nationality: "Inglaterra", 
+                rating: 90, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/433062-1671435885.jpg",
+                age: "23 años",
+                height: "1.78 m",
+                weight: "72 kg",
+                foot: "Izquierdo",
+                games: 48,
+                goals: 22,
+                assists: 18,
+                value: "€130M",
+                career: [
+                    { team: "Arsenal", period: "2018-Presente", logo: "https://logo.clearbit.com/arsenal.com" }
+                ],
+                titles: [
+                    "Premier League: 2024",
+                    "FA Cup: 2025",
+                    "Europa League: 2025"
+                ]
+            },
+            { 
+                rank: 7, 
+                name: "Jamal Musiala", 
+                position: "Centrocampista", 
+                team: "Bayern Munich", 
+                nationality: "Alemania", 
+                rating: 90, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/580984-1671435885.jpg",
+                age: "22 años",
+                height: "1.83 m",
+                weight: "75 kg",
+                foot: "Derecho",
+                games: 45,
+                goals: 20,
+                assists: 15,
+                value: "€125M",
+                career: [
+                    { team: "Bayern Munich", period: "2020-Presente", logo: "https://logo.clearbit.com/fcbayern.com" },
+                    { team: "Chelsea", period: "2019-2020", logo: "https://logo.clearbit.com/chelseafc.com" }
+                ],
+                titles: [
+                    "Bundesliga: 2021, 2022, 2023, 2024, 2025",
+                    "DFB-Pokal: 2023, 2025",
+                    "Champions League: 2020"
+                ]
+            },
+            { 
+                rank: 8, 
+                name: "Rodri", 
+                position: "Centrocampista", 
+                team: "Manchester City", 
+                nationality: "España", 
+                rating: 90, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/255817-1671435885.jpg",
+                age: "28 años",
+                height: "1.90 m",
+                weight: "82 kg",
+                foot: "Derecho",
+                games: 50,
+                goals: 12,
+                assists: 10,
+                value: "€120M",
+                career: [
+                    { team: "Manchester City", period: "2019-Presente", logo: "https://logo.clearbit.com/mancity.com" },
+                    { team: "Atlético Madrid", period: "2018-2019", logo: "https://logo.clearbit.com/atleticodemadrid.com" },
+                    { team: "Villarreal", period: "2015-2018", logo: "https://logo.clearbit.com/villarrealcf.es" }
+                ],
+                titles: [
+                    "Premier League: 2021, 2022, 2023, 2024, 2025",
+                    "Champions League: 2023",
+                    "FA Cup: 2023",
+                    "Nations League: 2023"
+                ]
+            },
+            { 
+                rank: 9, 
+                name: "Lautaro Martínez", 
+                position: "Delantero", 
+                team: "Inter Milan", 
+                nationality: "Argentina", 
+                rating: 89, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/406625-1671435885.jpg",
+                age: "27 años",
+                height: "1.74 m",
+                weight: "72 kg",
+                foot: "Derecho",
+                games: 46,
+                goals: 30,
+                assists: 8,
+                value: "€110M",
+                career: [
+                    { team: "Inter Milan", period: "2018-Presente", logo: "https://logo.clearbit.com/inter.it" },
+                    { team: "Racing Club", period: "2015-2018", logo: "https://logo.clearbit.com/racingclub.com.ar" }
+                ],
+                titles: [
+                    "Serie A: 2021, 2025",
+                    "Coppa Italia: 2023",
+                    "World Cup: 2022",
+                    "Copa América: 2021"
+                ]
+            },
+            { 
+                rank: 10, 
+                name: "Pedri", 
+                position: "Centrocampista", 
+                team: "Barcelona", 
+                nationality: "España", 
+                rating: 89, 
+                photo: "https://img.a.transfermarkt.technology/portrait/big/683840-1671435885.jpg",
+                age: "22 años",
+                height: "1.74 m",
+                weight: "68 kg",
+                foot: "Izquierdo",
+                games: 40,
+                goals: 10,
+                assists: 15,
+                value: "€100M",
+                career: [
+                    { team: "Barcelona", period: "2020-Presente", logo: "https://logo.clearbit.com/fcbarcelona.com" },
+                    { team: "Las Palmas", period: "2019-2020", logo: "https://logo.clearbit.com/udlaspalmas.es" }
+                ],
+                titles: [
+                    "La Liga: 2023",
+                    "Copa del Rey: 2024",
+                    "Olympic Silver: 2021"
+                ]
+            },
+            // Add more players up to 100...
+        ];
+
+        // Generate more teams to reach 100
+        for (let i = 11; i <= 100; i++) {
+            const leagues = ["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"];
+            const countries = ["Inglaterra", "España", "Alemania", "Italia", "Francia", "Brasil", "Argentina", "Portugal", "Países Bajos"];
+            const randomLeague = leagues[Math.floor(Math.random() * leagues.length)];
+            const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+            
+            topTeams.push({
+                rank: i,
+                name: `Equipo ${i}`,
+                league: randomLeague,
+                country: randomCountry,
+                logo: "",
+                founded: Math.floor(Math.random() * 100) + 1900,
+                stadium: `Estadio ${i}`,
+                capacity: `${Math.floor(Math.random() * 50) + 30},000`,
+                coach: `Entrenador ${i}`,
+                leagueTitles: Array(Math.floor(Math.random() * 5)).fill().map((_, idx) => 2020 + idx),
+                cupTitles: Array(Math.floor(Math.random() * 3)).fill().map((_, idx) => `Copa ${2021 + idx}`),
+                internationalTitles: Array(Math.floor(Math.random() * 2)).fill().map((_, idx) => `Título ${2022 + idx}`)
+            });
+        }
+
+        // Generate more players to reach 100
+        for (let i = 11; i <= 100; i++) {
+            const positions = ["Delantero", "Centrocampista", "Defensa", "Portero"];
+            const teams = ["Manchester City", "Real Madrid", "Bayern Munich", "Liverpool", "Paris Saint-Germain", "Barcelona", "Chelsea", "Inter Milan", "AC Milan", "Atlético Madrid"];
+            const nationalities = ["Argentina", "Brasil", "Francia", "Portugal", "España", "Alemania", "Inglaterra", "Bélgica", "Países Bajos", "Italia"];
+            
+            topPlayers.push({
+                rank: i,
+                name: `Jugador ${i}`,
+                position: positions[Math.floor(Math.random() * positions.length)],
+                team: teams[Math.floor(Math.random() * teams.length)],
+                nationality: nationalities[Math.floor(Math.random() * nationalities.length)],
+                rating: Math.floor(Math.random() * 15) + 75, // Random rating between 75-90
+                photo: "",
+                age: `${Math.floor(Math.random() * 10) + 20} años`,
+                height: `${1.70 + Math.random() * 0.20} m`,
+                weight: `${65 + Math.random() * 20} kg`,
+                foot: Math.random() > 0.5 ? "Derecho" : "Izquierdo",
+                games: Math.floor(Math.random() * 30) + 20,
+                goals: Math.floor(Math.random() * 30),
+                assists: Math.floor(Math.random() * 15),
+                value: `€${Math.floor(Math.random() * 80) + 20}M`,
+                career: [
+                    { team: teams[Math.floor(Math.random() * teams.length)], period: "2020-Presente", logo: "" },
+                    { team: `Club ${i}`, period: "2018-2020", logo: "" }
+                ],
+                titles: [
+                    `Liga ${Math.floor(Math.random() * 2) + 2023}`,
+                    `Copa ${Math.floor(Math.random() * 2) + 2023}`
+                ]
+            });
+        }
+
+        // DOM elements
+        const teamsSection = document.getElementById('teams-section');
+        const playersSection = document.getElementById('players-section');
+        const teamsContainer = document.getElementById('teams-container');
+        const playersContainer = document.getElementById('players-container');
+        const teamSort = document.getElementById('team-sort');
+        const playerSort = document.getElementById('player-sort');
+        const searchInput = document.getElementById('search-input');
+        const leagueFilter = document.getElementById('league-filter');
+        const countryFilter = document.getElementById('country-filter');
+        const tabButtons = document.querySelectorAll('.tab-button');
+
+        // Modal elements
+        const teamModal = document.getElementById('team-modal');
+        const closeTeamModal = document.getElementById('close-team-modal');
+        const playerModal = document.getElementById('player-modal');
+        const closePlayerModal = document.getElementById('close-player-modal');
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTeams(topTeams);
+            renderPlayers(topPlayers);
+        });
+
+        // Tab switching
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.id;
+                
+                // Update active tab
+                tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+                button.classList.add('tab-active');
+                
+                // Show corresponding section
+                if (tabId === 'teams-tab') {
+                    teamsSection.classList.remove('hidden');
+                    playersSection.classList.add('hidden');
+                } else {
+                    teamsSection.classList.add('hidden');
+                    playersSection.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Render teams
+        function renderTeams(teams) {
+            teamsContainer.innerHTML = '';
+            
+            teams.forEach(team => {
+                const teamCard = document.createElement('div');
+                teamCard.className = 'team-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 cursor-pointer';
+                teamCard.dataset.id = team.rank;
+                
+                teamCard.innerHTML = `
+                    <div class="relative">
+                        <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">#${team.rank}</div>
+                        ${team.logo ? 
+                            `<img src="${team.logo}" alt="${team.name}" class="w-full h-40 object-contain p-4">` : 
+                            `<div class="w-full h-40 logo-placeholder">Logo no disponible</div>`}
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">${team.name}</h3>
+                        <div class="flex items-center text-gray-600 text-sm mb-1">
+                            <i class="fas fa-trophy mr-1"></i>
+                            <span>${team.league}</span>
+                        </div>
+                        <div class="flex items-center text-gray-600 text-sm">
+                            <i class="fas fa-flag mr-1"></i>
+                            <span>${team.country}</span>
+                        </div>
+                    </div>
+                `;
+                
+                teamCard.addEventListener('click', () => openTeamModal(team));
+                teamsContainer.appendChild(teamCard);
+            });
+        }
+
+        // Render players
+        function renderPlayers(players) {
+            playersContainer.innerHTML = '';
+            
+            players.forEach(player => {
+                const playerRow = document.createElement('tr');
+                playerRow.className = 'player-card hover:bg-gray-50 transition cursor-pointer';
+                playerRow.dataset.id = player.rank;
+                
+                playerRow.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${player.rank}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            ${player.photo ? 
+                                `<img class="h-10 w-10 rounded-full mr-3" src="${player.photo}" alt="${player.name}">` : 
+                                `<div class="h-10 w-10 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-500"></i>
+                                </div>`}
+                            <div>
+                                <div class="font-medium text-gray-900">${player.name}</div>
+                                <div class="text-gray-500 text-xs">${player.nationality}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${player.position}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${player.team}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-flag mr-1 text-gray-400"></i>
+                            ${player.nationality}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex items-center">
+                            <span class="text-gray-900 font-bold mr-1">${player.rating}</span>
+                            <div class="flex">
+                                ${Array(Math.floor(player.rating/20)).fill().map(() => '<i class="fas fa-star text-yellow-400"></i>').join('')}
+                            </div>
+                        </div>
+                    </td>
+                `;
+                
+                playerRow.addEventListener('click', () => openPlayerModal(player));
+                playersContainer.appendChild(playerRow);
+            });
+        }
+
+        // Open team modal
+        function openTeamModal(team) {
+            document.getElementById('team-modal-name').textContent = team.name;
+            document.getElementById('team-modal-logo').src = team.logo || '';
+            document.getElementById('team-modal-logo').alt = team.name;
+            document.getElementById('team-modal-league').textContent = team.league;
+            document.getElementById('team-modal-country').textContent = team.country;
+            document.getElementById('team-modal-rank').textContent = team.rank;
+            document.getElementById('team-modal-founded').textContent = team.founded;
+            document.getElementById('team-modal-stadium').textContent = team.stadium;
+            document.getElementById('team-modal-capacity').textContent = team.capacity;
+            document.getElementById('team-modal-coach').textContent = team.coach;
+            
+            // Render league titles
+            const leagueTitlesContainer = document.getElementById('team-modal-league-titles');
+            leagueTitlesContainer.innerHTML = team.leagueTitles.length > 0 ? 
+                team.leagueTitles.map(title => `<p class="mb-1">• ${title}</p>`).join('') : 
+                '<p class="text-gray-500">No hay títulos registrados</p>';
+            
+            // Render cup titles
+            const cupTitlesContainer = document.getElementById('team-modal-cup-titles');
+            cupTitlesContainer.innerHTML = team.cupTitles.length > 0 ? 
+                team.cupTitles.map(title => `<p class="mb-1">• ${title}</p>`).join('') : 
+                '<p class="text-gray-500">No hay títulos registrados</p>';
+            
+            // Render international titles
+            const internationalTitlesContainer = document.getElementById('team-modal-international-titles');
+            internationalTitlesContainer.innerHTML = team.internationalTitles.length > 0 ? 
+                team.internationalTitles.map(title => `<p class="mb-1">• ${title}</p>`).join('') : 
+                '<p class="text-gray-500">No hay títulos registrados</p>';
+            
+            // Render featured players (top 5 from this team)
+            const featuredPlayersContainer = document.getElementById('team-modal-players');
+            const teamPlayers = topPlayers.filter(p => p.team === team.name).slice(0, 4);
+            
+            featuredPlayersContainer.innerHTML = teamPlayers.length > 0 ? 
+                teamPlayers.map(player => `
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            ${player.photo ? 
+                                `<img src="${player.photo}" alt="${player.name}" class="w-10 h-10 rounded-full mr-2">` : 
+                                `<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-gray-500"></i>
+                                </div>`}
+                            <div>
+                                <p class="font-medium">${player.name}</p>
+                                <p class="text-xs text-gray-500">${player.position}</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold">#${player.rank}</span>
+                            <span class="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-1 rounded">${player.rating}</span>
+                        </div>
+                    </div>
+                `).join('') : 
+                '<p class="text-gray-500">No hay jugadores destacados</p>';
+            
+            // Show modal
+            teamModal.classList.add('active');
+        }
+
+        // Open player modal
+        function openPlayerModal(player) {
+            document.getElementById('player-modal-name').textContent = player.name;
+            document.getElementById('player-modal-photo').src = player.photo || '';
+            document.getElementById('player-modal-photo').alt = player.name;
+            document.getElementById('player-modal-position').textContent = player.position;
+            document.getElementById('player-modal-nationality').textContent = player.nationality;
+            document.getElementById('player-modal-rank').textContent = player.rank;
+            document.getElementById('player-modal-age').textContent = player.age;
+            document.getElementById('player-modal-height').textContent = player.height;
+            document.getElementById('player-modal-weight').textContent = player.weight;
+            document.getElementById('player-modal-foot').textContent = player.foot;
+            document.getElementById('player-modal-games').textContent = player.games;
+            document.getElementById('player-modal-goals').textContent = player.goals;
+            document.getElementById('player-modal-assists').textContent = player.assists;
+            document.getElementById('player-modal-value').textContent = player.value;
+            document.getElementById('player-modal-rating').textContent = player.rating;
+            document.getElementById('player-modal-rating-bar').style.width = `${player.rating}%`;
+            
+            // Set team info
+            const team = topTeams.find(t => t.name === player.team);
+            document.getElementById('player-modal-team').textContent = player.team;
+            if (team && team.logo) {
+                document.getElementById('player-modal-team-logo').src = team.logo;
+                document.getElementById('player-modal-team-logo').alt = player.team;
+            } else {
+                document.getElementById('player-modal-team-logo').src = '';
+                document.getElementById('player-modal-team-logo').alt = '';
+            }
+            
+            // Render career
+            const careerContainer = document.getElementById('player-modal-career');
+            careerContainer.innerHTML = player.career.map(item => `
+                <div class="flex items-center">
+                    ${item.logo ? 
+                        `<img src="${item.logo}" alt="${item.team}" class="w-6 h-6 mr-2">` : 
+                        `<div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center mr-2">
+                            <i class="fas fa-shield-alt text-gray-500 text-xs"></i>
+                        </div>`}
+                    <div>
+                        <p class="font-medium">${item.team}</p>
+                        <p class="text-xs text-gray-500">${item.period}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Render titles
+            const titlesContainer = document.getElementById('player-modal-titles');
+            titlesContainer.innerHTML = player.titles.map(title => `
+                <div class="flex items-start">
+                    <i class="fas fa-trophy text-yellow-500 mt-1 mr-2"></i>
+                    <p>${title}</p>
+                </div>
+            `).join('');
+            
+            // Show modal
+            playerModal.classList.add('active');
+        }
+
+        // Close modals
+        closeTeamModal.addEventListener('click', () => {
+            teamModal.classList.remove('active');
+        });
+
+        closePlayerModal.addEventListener('click', () => {
+            playerModal.classList.remove('active');
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === teamModal) {
+                teamModal.classList.remove('active');
+            }
+            if (e.target === playerModal) {
+                playerModal.classList.remove('active');
+            }
+        });
+
+        // Sorting functionality
+        teamSort.addEventListener('change', () => {
+            const sortBy = teamSort.value;
+            const sortedTeams = [...topTeams];
+            
+            if (sortBy === 'name') {
+                sortedTeams.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortBy === 'league') {
+                sortedTeams.sort((a, b) => a.league.localeCompare(b.league));
+            } else if (sortBy === 'country') {
+                sortedTeams.sort((a, b) => a.country.localeCompare(b.country));
+            } else {
+                sortedTeams.sort((a, b) => a.rank - b.rank);
+            }
+            
+            renderTeams(sortedTeams);
+        });
+
+        playerSort.addEventListener('change', () => {
+            const sortBy = playerSort.value;
+            const sortedPlayers = [...topPlayers];
+            
+            if (sortBy === 'name') {
+                sortedPlayers.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortBy === 'position') {
+                sortedPlayers.sort((a, b) => a.position.localeCompare(b.position));
+            } else if (sortBy === 'team') {
+                sortedPlayers.sort((a, b) => a.team.localeCompare(b.team));
+            } else {
+                sortedPlayers.sort((a, b) => a.rank - b.rank);
+            }
+            
+            renderPlayers(sortedPlayers);
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            if (teamsSection.classList.contains('hidden')) {
+                // Search in players
+                const filteredPlayers = topPlayers.filter(player => 
+                    player.name.toLowerCase().includes(searchTerm) || 
+                    player.team.toLowerCase().includes(searchTerm) ||
+                    player.position.toLowerCase().includes(searchTerm) ||
+                    player.nationality.toLowerCase().includes(searchTerm)
+                );
+                renderPlayers(filteredPlayers);
+            } else {
+                // Search in teams
+                const filteredTeams = topTeams.filter(team => 
+                    team.name.toLowerCase().includes(searchTerm) || 
+                    team.league.toLowerCase().includes(searchTerm) ||
+                    team.country.toLowerCase().includes(searchTerm)
+                );
+                renderTeams(filteredTeams);
+            }
+        });
+
+        // Filter functionality
+        function applyFilters() {
+            const league = leagueFilter.value;
+            const country = countryFilter.value;
+            
+            if (teamsSection.classList.contains('hidden')) {
+                // Filter players (by team as league proxy)
+                let filteredPlayers = [...topPlayers];
+                
+                if (league !== 'all') {
+                    filteredPlayers = filteredPlayers.filter(player => 
+                        league === 'Otros' ? 
+                        !["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].some(l => player.team.includes(l)) :
+                        player.team.includes(league)
+                    );
+                }
+                
+                if (country !== 'all') {
+                    filteredPlayers = filteredPlayers.filter(player => 
+                        country === 'Otros' ? 
+                        !["Inglaterra", "España", "Alemania", "Italia", "Francia", "Brasil", "Argentina"].includes(player.nationality) :
+                        player.nationality === country
+                    );
+                }
+                
+                renderPlayers(filteredPlayers);
+            } else {
+                // Filter teams
+                let filteredTeams = [...topTeams];
+                
+                if (league !== 'all') {
+                    filteredTeams = filteredTeams.filter(team => 
+                        league === 'Otros' ? 
+                        !["Premier League", "La Liga", "Bundesliga", "Serie A", "Ligue 1"].includes(team.league) :
+                        team.league === league
+                    );
+                }
+                
+                if (country !== 'all') {
+                    filteredTeams = filteredTeams.filter(team => 
+                        country === 'Otros' ? 
+                        !["Inglaterra", "España", "Alemania", "Italia", "Francia", "Brasil", "Argentina"].includes(team.country) :
+                        team.country === country
+                    );
+                }
+                
+                renderTeams(filteredTeams);
+            }
+        }
+
+        leagueFilter.addEventListener('change', applyFilters);
+        countryFilter.addEventListener('change', applyFilters);
+
+        // Pagination (simplified for this example)
+        document.querySelectorAll('.pagination-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.pagination-button').forEach(btn => {
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                    btn.classList.add('hover:bg-gray-100');
+                });
+                
+                button.classList.add('bg-blue-600', 'text-white');
+                button.classList.remove('hover:bg-gray-100');
+                
+                // In a real app, this would fetch the corresponding page data
+                console.log(`Loading page ${button.dataset.page}`);
+            });
+        });
+    </script>
+</body>
+</html>
